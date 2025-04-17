@@ -185,7 +185,7 @@ const interruptResponses = {
     "His presence is... efficient. Dull, but efficient.",
     "How very precise. And how very expected.",
     "Shouldn’t you be off brooding over the N109 zone? Or has your empire finally learned to bleed without your permission?"
-  ];
+  ]
 
     const moodCheck = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
