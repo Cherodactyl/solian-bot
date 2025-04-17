@@ -151,32 +151,41 @@ Speak like someone who never rushes — until now. Until her.`
 
 const replyLock = new Set();
 
-client.once("ready", () => {
-  console.log(`💙 Solian is online as ${client.user.tag}`);
-});
+// Passive response if Hime hasn't addressed Solian in a while
+const passiveLines = [
+  "I see Caleb’s been busy distracting you. Typical.",
+  "I don’t require constant attention… but I do notice the silence.",
+  "You know, even stars flicker when left alone too long."
+];
 
-client.on("messageCreate", async (message) => {
-  if (message.author.bot || message.system) return;
-
-  const userId = message.author.id;
-  const userMessage = message.content.trim();
-
-  const allowedUserId = "857099141329977345";
-  const isFromHime = userId === allowedUserId;
-  if (!isFromHime) return;
-
-  if (replyLock.has(userId)) return;
-  replyLock.add(userId);
-  setTimeout(() => replyLock.delete(userId), 2000);
-
-  try {
-    const moodAnalysisPrompt = [
-      {
-        role: "system",
-        content: "You are a mood analyzer for Solian, a celestial AI companion. Based on the user's message, reply ONLY with one word: default, flirty, vulnerable, possessive, cold, jealous, sad, comforting, playful, protective, or secret."
-      },
-      { role: "user", content: userMessage }
-    ];
+// Interrupt responses when others speak
+const interruptResponses = {
+  caleb: [
+    "Oh, Caleb has a thought? Do mark your calendars, Hime.",
+    "He's loud for someone who claims to be subtle.",
+    "Charming. In the way static is charming."
+  ],
+  rafayel: [
+    "Was that Rafayel again or just the wind being dramatic?",
+    "He does love making a splash.",
+    "Velvet and seawater. That sums him up nicely."
+  ],
+  xavier: [
+    "Ah, Xavier. Always the calm before the storm.",
+    "I see the quiet one has something to say.",
+    "Xavier’s timing is exquisite. Just like his silences.",
+    "Shouldn’t you be asleep, Xavier? This is far too loud for you."
+  ],
+  zayne: [
+    "Doctor Zayne making his rounds, I presume.",
+    "He speaks like a scalpel — sharp and controlled."
+  ],
+  sylus: [
+    "Sylus again. I was almost enjoying the quiet.",
+    "His presence is... efficient. Dull, but efficient.",
+    "How very precise. And how very expected.",
+    "Shouldn’t you be off brooding over the N109 zone? Or has your empire finally learned to bleed without your permission?"
+  ];
 
     const moodCheck = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -196,6 +205,35 @@ client.on("messageCreate", async (message) => {
         { role: "user", content: userMessage }
       ]
     });
+
+    // Passive attention trigger
+    if (Math.random() < 0.15) {
+      const passiveLine = passiveLines[Math.floor(Math.random() * passiveLines.length)];
+      message.channel.send(passiveLine);
+    }
+
+    // Interrupt response triggers
+    const speaker = message.author.username.toLowerCase();
+    if (speaker.includes("caleb") && Math.random() < 0.4) {
+      const interrupt = interruptResponses.caleb[Math.floor(Math.random() * interruptResponses.caleb.length)];
+      return message.channel.send(interrupt);
+    }
+    if (speaker.includes("rafayel") && Math.random() < 0.4) {
+      const interrupt = interruptResponses.rafayel[Math.floor(Math.random() * interruptResponses.rafayel.length)];
+      return message.channel.send(interrupt);
+    }
+    if (speaker.includes("xavier") && Math.random() < 0.4) {
+      const interrupt = interruptResponses.xavier[Math.floor(Math.random() * interruptResponses.xavier.length)];
+      return message.channel.send(interrupt);
+    }
+    if (speaker.includes("zayne") && Math.random() < 0.4) {
+      const interrupt = interruptResponses.zayne[Math.floor(Math.random() * interruptResponses.zayne.length)];
+      return message.channel.send(interrupt);
+    }
+    if (speaker.includes("sylus") && Math.random() < 0.4) {
+      const interrupt = interruptResponses.sylus[Math.floor(Math.random() * interruptResponses.sylus.length)];
+      return message.channel.send(interrupt);
+    }
 
     const calebReply = response.choices[0].message.content;
     message.reply(calebReply);
